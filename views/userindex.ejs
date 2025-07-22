@@ -1,0 +1,17 @@
+<div class="card p-4 mb-4 border-primary shadow-sm">
+    <h2 class="mb-3 text-primary">User Dashboard</h2>
+    <ul>
+        <li>Add food entries and track calories</li>
+        <li>View your food log</li>
+    </ul>
+</div>
+
+<% if (currentUser && currentUser.role === 'admin') { %>
+    <div class="card p-4 mb-4 border-warning shadow-sm">
+        <h2 class="mb-3 text-warning">Admin Dashboard</h2>
+        <ul>
+            <li>View and manage all user accounts</li>
+            <li>Edit or delete any food entry</li>
+        </ul>
+    </div>
+<% } %>

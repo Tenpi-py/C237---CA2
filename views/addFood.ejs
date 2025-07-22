@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Food Entry</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="bg-light">
+    <div class="container py-4">
+        <div class="card p-4 mx-auto" style="max-width: 500px;">
+            <h2 class="mb-4 text-success">Add Food Entry</h2>
+            <form action="/food" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="food_name" class="form-label">Food Name:</label>
+                    <input type="text" name="food_name" id="food_name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">Image:</label>
+                    <input type="file" name="image" id="image" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="calories_in" class="form-label">Calories In:</label>
+                    <input type="number" name="calories_in" id="calories_in" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="calories_out" class="form-label">Calories Out:</label>
+                    <input type="number" name="calories_out" id="calories_out" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Add Food</button>
+            </form>
+            <a href="/food" class="btn btn-secondary mt-3 w-100">Back to My Food Entries</a>
+        </div>
+    </div>
+</body>
+</html>
