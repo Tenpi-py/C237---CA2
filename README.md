@@ -29,4 +29,14 @@ Any Blockers
 - All core CRUD and authentication features are working.
 - If any issues arise (e.g., login not working, profile update errors), please check the server logs and ensure the database connection is active.
 
-How to
+How to Run
+----------
+1. Install dependencies: `npm install`
+2. Start the server: `node app.js`
+3. Visit `http://localhost:3000` in your browser.
+
+Notes
+-----
+- Make sure the MySQL database is running and accessible.
+- Images are stored in `/public/images/`.
+- Admins can only be created via registration or by editing a user in the admin dashboard.
