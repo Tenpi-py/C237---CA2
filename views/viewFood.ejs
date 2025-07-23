@@ -11,6 +11,21 @@
         <div class="card p-4 position-relative">
             <a href="/addFood" class="btn btn-success btn-sm position-absolute end-0 mt-2 me-2">Add Food Entry</a>
             <h1 class="mb-4 text-primary">My Food Entries</h1>
+            <form class="row g-2 mb-3" method="GET" action="/food">
+                <div class="col-auto">
+                    <input type="text" name="search" class="form-control" placeholder="Search food name" value="<%= search || '' %>">
+                </div>
+                <div class="col-auto">
+                    <select name="sort" class="form-select">
+                        <option value="">Sort By</option>
+                        <option value="calories_in" <%= sort === 'calories_in' ? 'selected' : '' %>>Calories In</option>
+                        <option value="calories_out" <%= sort === 'calories_out' ? 'selected' : '' %>>Calories Out</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </form>
             <table class="table table-bordered table-striped align-middle">
                 <thead class="table-dark">
                     <tr>
