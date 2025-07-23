@@ -11,6 +11,21 @@
         <div class="card p-4 border-warning shadow-sm mb-4">
             <h1 class="mb-4 text-warning">Admin Dashboard</h1>
             <h2 class="text-secondary">Users</h2>
+            <form class="row g-2 mb-3" method="GET" action="/adminDashboard">
+                <div class="col-auto">
+                    <input type="text" name="userSearch" class="form-control" placeholder="Search users" value="<%= userSearch || '' %>">
+                </div>
+                <div class="col-auto">
+                    <select name="userSort" class="form-select">
+                        <option value="">Sort By</option>
+                        <option value="username" <%= userSort === 'username' ? 'selected' : '' %>>Username</option>
+                        <option value="role" <%= userSort === 'role' ? 'selected' : '' %>>Role</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Filter Users</button>
+                </div>
+            </form>
             <table class="table table-bordered table-striped align-middle">
                 <thead class="table-warning">
                     <tr>
@@ -47,6 +62,21 @@
             </table>
 
             <h2 class="text-secondary mt-4">Food Entries</h2>
+            <form class="row g-2 mb-3" method="GET" action="/adminDashboard">
+                <div class="col-auto">
+                    <input type="text" name="foodSearch" class="form-control" placeholder="Search food name" value="<%= foodSearch || '' %>">
+                </div>
+                <div class="col-auto">
+                    <select name="foodSort" class="form-select">
+                        <option value="">Sort By</option>
+                        <option value="calories_in" <%= foodSort === 'calories_in' ? 'selected' : '' %>>Calories In</option>
+                        <option value="calories_out" <%= foodSort === 'calories_out' ? 'selected' : '' %>>Calories Out</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Filter Food</button>
+                </div>
+            </form>
             <table class="table table-bordered table-striped align-middle">
                 <thead class="table-warning">
                     <tr>
