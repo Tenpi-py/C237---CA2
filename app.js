@@ -177,9 +177,26 @@ app.post('/profile', isUser, (req, res) => {
 
 // Food Entries (User)
 app.get('/food', isUser, (req, res) => {
-    db.query('SELECT * FROM food_entries WHERE username = ?', [req.session.currentUser.username], (err, results) => {
+    const { search, sort } = req.query;
+    let sql = 'SELECT * FROM food_entries WHERE username = ?';
+    let params = [req.session.currentUser.username];
+
+    if (search) {
+        sql += ' AND food_name LIKE ?';
+        params.push('%' + search + '%');
+    }
+
+    if (sort === 'calories_in') {
+        sql += ' ORDER BY calories_in DESC';
+    } else if (sort === 'calories_out') {
+        sql += ' ORDER BY calories_out DESC';
+    } else {
+        sql += ' ORDER BY id DESC';
+    }
+
+    db.query(sql, params, (err, results) => {
         if (err) return res.status(500).send(err);
-        res.render('viewFood', { foods: results });
+        res.render('viewFood', { foods: results, search, sort });
     });
 });
 app.post('/food', isUser, upload.single('image'), (req, res) => {
@@ -239,11 +256,43 @@ app.get('/food/:id/delete', isUser, (req, res) => {
 
 // Food Entries (Admin)
 app.get('/adminDashboard', isAdmin, (req, res) => {
-    db.query('SELECT * FROM users', (err, users) => {
+    const { foodSearch, foodSort, userSearch, userSort } = req.query;
+
+    // Users
+    let userSql = 'SELECT * FROM users WHERE 1=1';
+    let userParams = [];
+    if (userSearch) {
+        userSql += ' AND (username LIKE ? OR email LIKE ?)';
+        userParams.push('%' + userSearch + '%', '%' + userSearch + '%');
+    }
+    if (userSort === 'username') {
+        userSql += ' ORDER BY username ASC';
+    } else if (userSort === 'role') {
+        userSql += ' ORDER BY role ASC';
+    } else {
+        userSql += ' ORDER BY id ASC';
+    }
+
+    // Food Entries
+    let foodSql = 'SELECT * FROM food_entries WHERE 1=1';
+    let foodParams = [];
+    if (foodSearch) {
+        foodSql += ' AND food_name LIKE ?';
+        foodParams.push('%' + foodSearch + '%');
+    }
+    if (foodSort === 'calories_in') {
+        foodSql += ' ORDER BY calories_in DESC';
+    } else if (foodSort === 'calories_out') {
+        foodSql += ' ORDER BY calories_out DESC';
+    } else {
+        foodSql += ' ORDER BY id DESC';
+    }
+
+    db.query(userSql, userParams, (err, users) => {
         if (err) return res.status(500).send(err);
-        db.query('SELECT * FROM food_entries', (err2, foods) => {
+        db.query(foodSql, foodParams, (err2, foods) => {
             if (err2) return res.status(500).send(err2);
-            res.render('adminDashboard', { users, foods, currentUser: req.session.currentUser });
+            res.render('adminDashboard', { users, foods, currentUser: req.session.currentUser, foodSearch, foodSort, userSearch, userSort });
         });
     });
 });
