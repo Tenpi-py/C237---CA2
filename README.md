@@ -14,7 +14,7 @@ What's Completed
 - Admin can edit/delete any user (except self) and any food entry
 - Bootstrap styling for all pages
 - Session management
-- Search/Sort filtering
+- Search/Sort filtering for food entries and admin dashboard
 
 What's Still In Progress
 ------------------------
