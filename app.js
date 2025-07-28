@@ -27,11 +27,11 @@ app.set('views', __dirname + '/views');
 
 // MySQL connection
 const db = mysql.createConnection({
-    host: 's09mjq.h.filess.io',
-    user: 'c237cadb_hourmejust',
-    port: 3307,
-    password: '130e4657717e6ffce08ef6c11e9ba689cc77bec0',
-    database: 'c237cadb_hourmejust',
+    host: '9wz5oz.h.filess.io',
+    user: 'c237ca2database_spiritcow',
+    port: 61002,
+    password: '4d538490cf48da9084d4caceccbbf7121a587270',
+    database: 'c237ca2database_spiritcow',
     ssl: false
 });
 db.connect(err => {
@@ -97,15 +97,25 @@ app.post('/register', (req, res) => {
     if (password !== confirm_password) {
         return res.render('register', { messages: [], errors: ['Passwords do not match.'], formData: req.body });
     }
-    const hashedPassword = hashPassword(password);
-    db.query(
-        'INSERT INTO users (username, email, contact, password, confirm_password, role) VALUES (?, ?, ?, ?, ?, ?)',
-        [username, email, contact, hashedPassword, hashedPassword, role || 'user'],
-        (err, result) => {
-            if (err) return res.render('register', { messages: [], errors: ['Registration failed: ' + err.sqlMessage], formData: req.body });
-            res.redirect('/login');
+    // Check for duplicate email or username
+    db.query('SELECT * FROM users WHERE email = ? OR username = ?', [email, username], (err, results) => {
+        if (err) return res.render('register', { messages: [], errors: ['Database error: ' + err.sqlMessage], formData: req.body });
+        if (results.length > 0) {
+            const errors = [];
+            if (results.some(u => u.email === email)) errors.push('Email already exists.');
+            if (results.some(u => u.username === username)) errors.push('Username already exists.');
+            return res.render('register', { messages: [], errors, formData: req.body });
         }
-    );
+        const hashedPassword = hashPassword(password);
+        db.query(
+            'INSERT INTO users (username, email, contact, password, confirm_password, role) VALUES (?, ?, ?, ?, ?, ?)',
+            [username, email, contact, hashedPassword, hashedPassword, role || 'user'],
+            (err, result) => {
+                if (err) return res.render('register', { messages: [], errors: ['Registration failed: ' + err.sqlMessage], formData: req.body });
+                res.redirect('/login');
+            }
+        );
+    });
 });
 
 // Login/Logout
