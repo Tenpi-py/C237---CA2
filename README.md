@@ -15,12 +15,10 @@ What's Completed
 - Bootstrap styling for all pages
 - Session management
 - Search/Sort filtering for food entries and admin dashboard
+- Password match validation for profile update (password reset)
 
 What's Still In Progress
 ------------------------
-- No password match validation for profile update
-- No search/filter for food entries yet
-- No password reset/forgot password feature
 - No pagination for food entries or users
 - No user profile image/avatar
 
