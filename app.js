@@ -143,44 +143,79 @@ app.get('/logout', (req, res) => { // Logout route
     res.redirect('/');
 });
 
-// Profile
+// GET profile page (view profile form)
 app.get('/profile', isUser, (req, res) => {
     const userId = req.session.currentUser.id;
+
     db.query('SELECT * FROM users WHERE id = ?', [userId], (err, results) => {
         if (err) return res.status(500).send(err);
+        if (results.length === 0) return res.status(404).send('User not found');
+
         const profile = results[0];
-        res.render('profile', { profile });
+        // If no image uploaded, use default
+        if (!profile.profile_image) profile.profile_image = '/images/default.jpg';
+
+        res.render('profile', {
+            profile,
+            error: null,
+            success: null
+        });
     });
 });
-app.post('/profile', isUser, (req, res) => {
-    const userId = req.session.currentUser.id;
-    // Use confirm_password from the form, but confirm_password for DB
-    const { username, email, contact, password, confirmPassword } = req.body;
 
-    // Password match check
+// Profile Update with Avatar Upload
+app.post('/profile', isUser, upload.single('profile_image'), (req, res) => {
+    const userId = req.session.currentUser.id;
+
+    // Extract form fields safely
+    const { username, email, contact, password, confirmPassword } = req.body || {};
+
+    // Validate required fields
+    if (!username || !email || !contact || !password || !confirmPassword) {
+        return res.status(400).send('Form submission error. Missing fields.');
+    }
+
+    // Check if passwords match
     if (password !== confirmPassword) {
-        // Re-render profile page with error
+        // Re-render with error message
         return db.query('SELECT * FROM users WHERE id = ?', [userId], (err, results) => {
             if (err) return res.status(500).send(err);
             const profile = results[0];
-            res.render('profile', { profile, error: 'Passwords do not match.' });
+            res.render('profile', { profile, error: 'Passwords do not match.', success: null });
         });
     }
 
+    // Hash the password
     const hashedPassword = hashPassword(password);
 
+    // Get uploaded image or fallback to existing session image
+    const profileImage = req.file ? '/images/' + req.file.filename : req.session.currentUser.profile_image;
+
+    // Update user in database
     db.query(
-        'UPDATE users SET username=?, email=?, contact=?, password=?, confirm_password=? WHERE id=?',
-        [username, email, contact, hashedPassword, hashedPassword, userId],
+        'UPDATE users SET username=?, email=?, contact=?, password=?, confirm_password=?, profile_image=? WHERE id=?',
+        [username, email, contact, hashedPassword, hashedPassword, profileImage, userId],
         (err) => {
             if (err) return res.status(500).send(err);
-            // Update session info so changes reflect immediately
+
+            // Update session user data
             req.session.currentUser.username = username;
             req.session.currentUser.email = email;
             req.session.currentUser.contact = contact;
             req.session.currentUser.password = hashedPassword;
             req.session.currentUser.confirm_password = hashedPassword;
-            res.redirect('/'); // Redirect to home page after update
+            req.session.currentUser.profile_image = profileImage;
+
+            // Reload profile from DB for latest info
+            db.query('SELECT * FROM users WHERE id = ?', [userId], (err2, results) => {
+                if (err2) return res.status(500).send(err2);
+                const profile = results[0];
+                res.render('profile', {
+                    profile,
+                    error: null,
+                    success: 'Profile updated successfully!'
+                });
+            });
         }
     );
 });
@@ -371,6 +406,19 @@ app.post('/editAdmin/:id', isAdmin, (req, res) => {
             res.redirect('/adminDashboard');
         }
     );
+});
+
+// TEMP ROUTE: Add profile_image column if missing
+app.get('/add-profile-image-column', (req, res) => {
+    db.query(`ALTER TABLE users ADD COLUMN profile_image VARCHAR(255)`, (err, result) => {
+        if (err) {
+            if (err.code === 'ER_DUP_FIELDNAME') {
+                return res.send('✅ Column already exists.');
+            }
+            return res.status(500).send('❌ Error: ' + err.sqlMessage);
+        }
+        res.send('✅ Column "profile_image" added successfully.');
+    });
 });
 
 // Start server
