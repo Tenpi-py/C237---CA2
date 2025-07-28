@@ -18,7 +18,16 @@
                 <div class="alert alert-success"><%= success %></div>
             <% } %>
 
-            <form action="/profile" method="POST" id="profileForm">
+            <div class="text-center mb-3">
+                <img src="<%= profile.profile_image %>" alt="Profile Picture" class="rounded-circle border" width="120" height="120">
+            </div>
+
+            <form action="/profile" method="POST" enctype="multipart/form-data" id="profileForm">
+                <div class="mb-3">
+                    <label for="profile_image" class="form-label">Change Profile Picture</label>
+                    <input type="file" name="profile_image" id="profile_image" class="form-control">
+                </div>
+
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
                     <input type="text" name="username" id="username" class="form-control"
