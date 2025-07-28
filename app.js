@@ -318,6 +318,13 @@ app.post('/admin/food/:id/edit', isAdmin, upload.single('image'), (req, res) => 
         }
     );
 });
+app.get('/admin/food/:id/delete', isAdmin, (req, res) => {
+    const id = req.params.id;
+    db.query('DELETE FROM food_entries WHERE id=?', [id], (err, result) => {
+        if (err) return res.status(500).send(err);
+        res.redirect('/adminDashboard');
+    });
+});
 
 // Admin: Delete user account
 app.get('/deleteUser/:id', isAdmin, (req, res) => {
