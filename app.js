@@ -92,14 +92,14 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
     const { username, email, contact, password, confirm_password, role } = req.body;
     if (!password || password.length < 6) {
-        return res.render('register', { messages: [], errors: ['Password must be 6 or more characters.'], formData: req.body });
+        return res.render('register', { messages: [], errors: ['Password must be 6 or more characters.'], formData: req.body }); // Password length check
     }
     if (password !== confirm_password) {
         return res.render('register', { messages: [], errors: ['Passwords do not match.'], formData: req.body });
     }
     // Check for duplicate email or username
-    db.query('SELECT * FROM users WHERE email = ? OR username = ?', [email, username], (err, results) => {
-        if (err) return res.render('register', { messages: [], errors: ['Database error: ' + err.sqlMessage], formData: req.body });
+    db.query('SELECT * FROM users WHERE email = ? OR username = ?', [email, username], (err, results) => { // Check for existing users
+        if (err) return res.render('register', { messages: [], errors: ['Database error: ' + err.sqlMessage], formData: req.body }); // Handle database errors
         if (results.length > 0) {
             const errors = [];
             if (results.some(u => u.email === email)) errors.push('Email already exists.');
@@ -108,10 +108,10 @@ app.post('/register', (req, res) => {
         }
         const hashedPassword = hashPassword(password);
         db.query(
-            'INSERT INTO users (username, email, contact, password, confirm_password, role) VALUES (?, ?, ?, ?, ?, ?)',
-            [username, email, contact, hashedPassword, hashedPassword, role || 'user'],
+            'INSERT INTO users (username, email, contact, password, confirm_password, role) VALUES (?, ?, ?, ?, ?, ?)', // Insert new user
+            [username, email, contact, hashedPassword, hashedPassword, role || 'user'], // Default role to 'user' if not specified
             (err, result) => {
-                if (err) return res.render('register', { messages: [], errors: ['Registration failed: ' + err.sqlMessage], formData: req.body });
+                if (err) return res.render('register', { messages: [], errors: ['Registration failed: ' + err.sqlMessage], formData: req.body });// Handle insertion errors
                 res.redirect('/login');
             }
         );
@@ -123,23 +123,23 @@ app.get('/login', (req, res) => {
     res.render('login', { errors: [], messages: [] });
 });
 app.post('/login', (req, res) => {
-    const { identifier, password } = req.body;
+    const { identifier, password } = req.body; // Use identifier for both username and email
     db.query(
-        'SELECT * FROM users WHERE username = ? OR email = ?',
+        'SELECT * FROM users WHERE username = ? OR email = ?', // Check for user by username or email
         [identifier, identifier],
         (err, results) => {
-            if (err) return res.status(500).send(err);
-            if (results.length === 0) return res.render('login', { errors: ['Invalid credentials'], messages: [] });
-            const user = results[0];
-            const hashedPassword = hashPassword(password);
+            if (err) return res.status(500).send(err); // Handle database errors
+            if (results.length === 0) return res.render('login', { errors: ['Invalid credentials'], messages: [] });// No user found
+            const user = results[0]; // Use the first result
+            const hashedPassword = hashPassword(password); // Hash the input password
             if (hashedPassword !== user.password) return res.render('login', { errors: ['Invalid credentials'], messages: [] });
             req.session.currentUser = user;
             res.redirect('/');
         }
     );
 });
-app.get('/logout', (req, res) => {
-    req.session.currentUser = null;
+app.get('/logout', (req, res) => { // Logout route
+    req.session.currentUser = null; 
     res.redirect('/');
 });
 
