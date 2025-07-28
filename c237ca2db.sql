@@ -17,3 +17,6 @@ CREATE TABLE food_entries (
     calories_in INT,
     calories_out INT
 );
+
+ALTER TABLE users AUTO_INCREMENT = 1;
+ALTER TABLE food_entries AUTO_INCREMENT = 1;
