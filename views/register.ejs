@@ -66,24 +66,27 @@
                 <% }); %>
             </div>
         <% } %>
-
-        <form action="/register" method="POST"> // Form for user registration
+        // Form for user registration
+        <form action="/register" method="POST">
             <div class="form-group mb-3">
+                // Input for username
                 <label for="username" class="form-label">Username:</label>
                 <input type="text" id="username" name="username" class="form-control" required placeholder="Enter your username"
-                value="<%= formData?.username || '' %>"> // Input for username
+                value="<%= formData?.username || '' %>">
             </div>
 
+            // Input for email
             <div class="form-group mb-3">
                 <label for="email" class="form-label">Email:</label>
                 <input type="email" id="email" name="email" class="form-control" required placeholder="Enter your email"
-                value="<%= formData?.email || '' %>"> // Input for email
+                value="<%= formData?.email || '' %>">
             </div>
 
+            // Input for contact number
             <div class="form-group mb-3">
                 <label for="contact" class="form-label">Contact Number:</label>
                 <input type="text" id="contact" name="contact" class="form-control" required placeholder="Enter your contact number"
-                value="<%= formData?.contact || '' %>"> // Input for contact number
+                value="<%= formData?.contact || '' %>">
             </div>
 
             <div class="form-group mb-3">
